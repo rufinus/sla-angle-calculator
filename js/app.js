@@ -57,8 +57,35 @@ document.addEventListener('alpine:init', () => {
     },
 
     // ============================================================
+    // VALIDATION
+    // ============================================================
+
+    validateInput(value, min = 1, max = 10000) {
+      if (value === null || value === '') return null;
+
+      const num = parseFloat(value);
+      if (isNaN(num)) return 'Please enter a valid number';
+      if (num < min) return `Value must be at least ${min}μm`;
+      if (num > max) return `Value must not exceed ${max}μm`;
+
+      return null;
+    },
+
+    // ============================================================
     // COMPUTED PROPERTIES
     // ============================================================
+
+    get validationErrors() {
+      return {
+        manualPixelX: this.validateInput(this.manualPixelX),
+        manualPixelY: this.validateInput(this.manualPixelY),
+        layerHeight: this.validateInput(this.layerHeight, 10, 200)
+      };
+    },
+
+    get isValid() {
+      return !Object.values(this.validationErrors).some(error => error !== null);
+    },
 
     get filteredPrinters() {
       if (!this.searchQuery.trim()) {
@@ -100,6 +127,7 @@ document.addEventListener('alpine:init', () => {
     },
 
     calculateAngle(layerHeight, pixelSize) {
+      if (!this.isValid) return null;
       if (!layerHeight || layerHeight <= 0) return null;
       if (!pixelSize || pixelSize <= 0) return null;
 
