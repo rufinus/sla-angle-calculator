@@ -1,0 +1,167 @@
+/* ==========================================================================
+   SLA Angle Calculator - Application Styles
+   Framework: Pico CSS (vendor/pico.min.css)
+   ========================================================================== */
+
+/* Variables
+   ========================================================================== */
+:root {
+  --color-primary: #1095c1;
+  --color-error: #dc3545;
+  --color-warning: #ffc107;
+  --color-success: #28a745;
+  --skeleton-base: #e5e7eb;
+  --skeleton-highlight: #f3f4f6;
+}
+
+/* Reset & Alpine.js Integration
+   ========================================================================== */
+[x-cloak] {
+  display: none !important;
+}
+
+/* Layout
+   ========================================================================== */
+.calculator-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .calculator-container {
+    margin: 3rem auto;
+    padding: 0 2rem;
+  }
+}
+
+/* Components
+   ========================================================================== */
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: 9999px;
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* Error message */
+.error-message {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-error);
+}
+
+/* States
+   ========================================================================== */
+
+/* Focus states for accessibility */
+input:focus-visible,
+button:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Error state */
+.error,
+[aria-invalid="true"] {
+  border-color: var(--color-error) !important;
+}
+
+.error:focus,
+[aria-invalid="true"]:focus {
+  outline-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  min-height: 1rem;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Utilities
+   ========================================================================== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+/* Dark Mode
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --skeleton-base: #374151;
+    --skeleton-highlight: #4b5563;
+  }
+}
+
+/* Responsive Adjustments
+   ========================================================================== */
+@media (max-width: 767px) {
+  .calculator-container {
+    margin: 1rem auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .calculator-container {
+    margin: 4rem auto;
+  }
+}
+
+/* Reduced Motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--skeleton-base);
+  }
+}
