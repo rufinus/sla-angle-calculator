@@ -181,6 +181,43 @@
                 <span class="badge" x-text="hasSquarePixels ? 'Square Pixels' : 'Non-Square Pixels'"></span>
                 <span x-show="hasSquarePixels" x-text="currentPixelX + 'μm'"></span>
             </div>
+
+            <!-- Angle Diagram -->
+            <svg
+                class="angle-diagram"
+                viewBox="0 0 400 280"
+                role="img"
+                aria-labelledby="diagram-title diagram-desc"
+            >
+                <title id="diagram-title">Angle Diagram</title>
+                <desc id="diagram-desc">Visual representation of tilt angle calculation showing the relationship between layer height, pixel size, and resulting angle</desc>
+
+                <!-- Build plate -->
+                <line x1="50" y1="220" x2="350" y2="220" class="build-plate" />
+                <text x="200" y="260" class="diagram-label">Build Plate</text>
+
+                <!-- Model surface (angled line) -->
+                <line x1="100" y1="220" x2="280" y2="80" class="model-surface" />
+
+                <!-- Layer height indicator (vertical dashed line) -->
+                <line x1="100" y1="220" x2="100" y2="140" class="dimension-line" />
+                <line x1="95" y1="220" x2="105" y2="220" class="dimension-cap" />
+                <line x1="95" y1="140" x2="105" y2="140" class="dimension-cap" />
+                <text x="75" y="185" class="dimension-label">LH</text>
+
+                <!-- Pixel size indicator (horizontal dashed line) -->
+                <line x1="100" y1="230" x2="180" y2="230" class="dimension-line" />
+                <line x1="100" y1="225" x2="100" y2="235" class="dimension-cap" />
+                <line x1="180" y1="225" x2="180" y2="235" class="dimension-cap" />
+                <text x="140" y="250" class="dimension-label">PX</text>
+
+                <!-- Angle arc -->
+                <path d="M 140 220 A 40 40 0 0 0 125 188" class="angle-arc" fill="none" />
+                <text x="155" y="200" class="angle-label">θ</text>
+
+                <!-- Right angle indicator at origin -->
+                <path d="M 100 210 L 110 210 L 110 220" class="right-angle" fill="none" />
+            </svg>
         </section>
 
         <footer>

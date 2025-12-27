@@ -423,6 +423,69 @@ select:focus-visible {
   }
 }
 
+/* SVG Angle Diagram
+   ========================================================================== */
+.angle-diagram {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin: 1.5rem auto 0;
+}
+
+.angle-diagram .build-plate {
+  stroke: var(--pico-muted-color, #6b7280);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.angle-diagram .model-surface {
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.angle-diagram .dimension-line {
+  stroke: var(--pico-color, #374151);
+  stroke-width: 1.5;
+  stroke-dasharray: 6, 4;
+}
+
+.angle-diagram .dimension-cap {
+  stroke: var(--pico-color, #374151);
+  stroke-width: 1.5;
+}
+
+.angle-diagram .angle-arc {
+  stroke: var(--color-success);
+  stroke-width: 2;
+}
+
+.angle-diagram .right-angle {
+  stroke: var(--pico-muted-color, #6b7280);
+  stroke-width: 1;
+}
+
+.angle-diagram .diagram-label,
+.angle-diagram .dimension-label,
+.angle-diagram .angle-label {
+  font-family: inherit;
+  font-size: 14px;
+  fill: var(--pico-color, #374151);
+  text-anchor: middle;
+}
+
+.angle-diagram .dimension-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.angle-diagram .angle-label {
+  font-size: 16px;
+  font-weight: 600;
+  fill: var(--color-success);
+}
+
 /* Dark Mode Dropdown
    ========================================================================== */
 @media (prefers-color-scheme: dark) {
@@ -446,5 +509,24 @@ select:focus-visible {
 
   .results {
     background: var(--pico-card-background-color, #1f2937);
+  }
+
+  /* SVG Diagram Dark Mode */
+  .angle-diagram .dimension-line,
+  .angle-diagram .dimension-cap {
+    stroke: var(--pico-color, #e5e7eb);
+  }
+
+  .angle-diagram .diagram-label,
+  .angle-diagram .dimension-label {
+    fill: var(--pico-color, #e5e7eb);
+  }
+
+  .angle-diagram .build-plate {
+    stroke: var(--pico-muted-color, #9ca3af);
+  }
+
+  .angle-diagram .right-angle {
+    stroke: var(--pico-muted-color, #9ca3af);
   }
 }
