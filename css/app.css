@@ -329,6 +329,61 @@ select:focus-visible {
   color: var(--pico-muted-color, #6b7280);
 }
 
+/* Non-square pixel dual layout */
+.angle-display.dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.angle-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.angle-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pico-muted-color, #6b7280);
+  margin-bottom: 0.25rem;
+}
+
+.angle-row {
+  display: flex;
+  align-items: baseline;
+}
+
+.angle-display.dual .angle-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.angle-display.dual .angle-unit {
+  font-size: 1.25rem;
+  color: var(--pico-muted-color, #6b7280);
+  vertical-align: super;
+}
+
+.pixel-size {
+  font-size: 0.875rem;
+  color: var(--pico-muted-color, #6b7280);
+  margin-top: 0.25rem;
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 480px) {
+  .angle-display.dual {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
 /* Dark Mode Dropdown
    ========================================================================== */
 @media (prefers-color-scheme: dark) {

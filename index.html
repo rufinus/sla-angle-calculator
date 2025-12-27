@@ -97,12 +97,37 @@
         </section>
 
         <section class="results" x-show="canShowResults">
-            <h2>Calculated Angle</h2>
+            <h2>Calculated Angle<span x-show="!hasSquarePixels">s</span></h2>
 
-            <div class="angle-display">
-                <span class="angle-value" x-text="angleX?.toFixed(2) ?? '--'"></span>
-                <span class="angle-unit">°</span>
-            </div>
+            <!-- Square pixels: single angle -->
+            <template x-if="hasSquarePixels">
+                <div class="angle-display single">
+                    <span class="angle-value" x-text="angleX?.toFixed(2) ?? '--'"></span>
+                    <span class="angle-unit">°</span>
+                </div>
+            </template>
+
+            <!-- Non-square pixels: two angles -->
+            <template x-if="!hasSquarePixels">
+                <div class="angle-display dual">
+                    <div class="angle-column">
+                        <span class="angle-label">X Angle</span>
+                        <div class="angle-row">
+                            <span class="angle-value" x-text="angleX?.toFixed(2) ?? '--'"></span>
+                            <span class="angle-unit">°</span>
+                        </div>
+                        <span class="pixel-size" x-text="currentPixelX + 'μm'"></span>
+                    </div>
+                    <div class="angle-column">
+                        <span class="angle-label">Y Angle</span>
+                        <div class="angle-row">
+                            <span class="angle-value" x-text="angleY?.toFixed(2) ?? '--'"></span>
+                            <span class="angle-unit">°</span>
+                        </div>
+                        <span class="pixel-size" x-text="currentPixelY + 'μm'"></span>
+                    </div>
+                </div>
+            </template>
 
             <div class="layer-height-control">
                 <label for="layer-height">Layer Height (μm)</label>
@@ -120,8 +145,8 @@
             </div>
 
             <div class="pixel-info-display">
-                <span class="badge" x-show="hasSquarePixels">Square Pixels</span>
-                <span x-text="currentPixelX + 'μm'"></span>
+                <span class="badge" x-text="hasSquarePixels ? 'Square Pixels' : 'Non-Square Pixels'"></span>
+                <span x-show="hasSquarePixels" x-text="currentPixelX + 'μm'"></span>
             </div>
         </section>
 
