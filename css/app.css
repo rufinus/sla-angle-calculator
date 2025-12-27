@@ -763,7 +763,7 @@ select:focus-visible {
 .modal {
   background: var(--pico-background-color, #fff);
   border-radius: 8px;
-  max-width: 400px;
+  max-width: 480px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -847,6 +847,7 @@ select:focus-visible {
   margin: 0;
   font-weight: 600;
   text-align: right;
+  white-space: nowrap;
 }
 
 /* Dark Mode Modal */
