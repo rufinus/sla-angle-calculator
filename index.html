@@ -16,8 +16,51 @@
             <p>Based on the original calculator by RC87</p>
         </header>
 
-        <section>
-            <!-- Calculator content will be implemented here -->
+        <section class="printer-selector">
+            <label for="printer-search">Select Printer</label>
+            <div class="dropdown-wrapper">
+                <input
+                    id="printer-search"
+                    type="text"
+                    x-model="searchQuery"
+                    @focus="openDropdown()"
+                    @blur.debounce.200ms="closeDropdown()"
+                    :placeholder="selectedPrinter ? '' : 'Search printers...'"
+                    :value="selectedPrinter && !dropdownOpen ? selectedPrinter.manufacturer + ' ' + selectedPrinter.model : searchQuery"
+                    autocomplete="off"
+                />
+                <ul x-show="dropdownOpen" x-cloak class="dropdown-list">
+                    <template x-if="loading">
+                        <li class="dropdown-item loading">Loading printers...</li>
+                    </template>
+                    <template x-if="jsonError">
+                        <li class="dropdown-item error" x-text="jsonError"></li>
+                    </template>
+                    <template x-if="!loading && !jsonError && filteredPrinters.length === 0">
+                        <li class="dropdown-item empty">No printers found</li>
+                    </template>
+                    <template x-for="printer in filteredPrinters" :key="printer.id">
+                        <li class="dropdown-item" @mousedown.prevent="selectPrinter(printer)">
+                            <span class="printer-name" x-text="printer.manufacturer + ' ' + printer.model"></span>
+                            <span class="pixel-info" x-text="printer.pixelX === printer.pixelY ? printer.pixelX + 'μm' : printer.pixelX + '×' + printer.pixelY + 'μm'"></span>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+        </section>
+
+        <section class="manual-input" x-show="!selectedPrinter">
+            <p class="hint">Or enter pixel size manually:</p>
+            <div class="manual-fields">
+                <div class="field">
+                    <label for="manual-pixel-x">Pixel X (μm)</label>
+                    <input id="manual-pixel-x" type="number" x-model.number="manualPixelX" min="1" max="200" step="0.1" />
+                </div>
+                <div class="field">
+                    <label for="manual-pixel-y">Pixel Y (μm)</label>
+                    <input id="manual-pixel-y" type="number" x-model.number="manualPixelY" min="1" max="200" step="0.1" />
+                </div>
+            </div>
         </section>
 
         <footer>

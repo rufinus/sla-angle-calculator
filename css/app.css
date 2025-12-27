@@ -165,3 +165,116 @@ select:focus-visible {
     background: var(--skeleton-base);
   }
 }
+
+/* Printer Selector Dropdown
+   ========================================================================== */
+.printer-selector {
+  margin-bottom: 1.5rem;
+}
+
+.dropdown-wrapper {
+  position: relative;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--pico-background-color, #fff);
+  border: 1px solid var(--pico-form-element-border-color, #d1d5db);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--pico-form-element-border-color, #e5e7eb);
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: var(--pico-primary-focus, rgba(16, 149, 193, 0.1));
+}
+
+.dropdown-item.loading,
+.dropdown-item.empty {
+  color: var(--pico-muted-color, #6b7280);
+  cursor: default;
+  justify-content: center;
+}
+
+.dropdown-item.loading:hover,
+.dropdown-item.empty:hover {
+  background-color: transparent;
+}
+
+.dropdown-item.error {
+  color: var(--color-error);
+  cursor: default;
+  justify-content: center;
+}
+
+.printer-name {
+  font-weight: 500;
+}
+
+.pixel-info {
+  font-size: 0.875rem;
+  color: var(--pico-muted-color, #6b7280);
+}
+
+/* Manual Input Section
+   ========================================================================== */
+.manual-input {
+  margin-bottom: 1.5rem;
+}
+
+.manual-input .hint {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--pico-muted-color, #6b7280);
+}
+
+.manual-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.manual-fields .field {
+  display: flex;
+  flex-direction: column;
+}
+
+.manual-fields label {
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Dark Mode Dropdown
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  .dropdown-list {
+    background: var(--pico-background-color, #1f2937);
+    border-color: var(--pico-form-element-border-color, #374151);
+  }
+
+  .dropdown-item {
+    border-color: var(--pico-form-element-border-color, #374151);
+  }
+}
