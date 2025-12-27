@@ -90,13 +90,22 @@ document.addEventListener('alpine:init', () => {
     },
 
     get angleX() {
-      // TODO: Calculate angle for X axis
-      return null;
+      const pixelX = this.selectedPrinter?.pixelX ?? this.manualPixelX;
+      return this.calculateAngle(this.layerHeight, pixelX);
     },
 
     get angleY() {
-      // TODO: Calculate angle for Y axis
-      return null;
+      const pixelY = this.selectedPrinter?.pixelY ?? this.manualPixelY;
+      return this.calculateAngle(this.layerHeight, pixelY);
+    },
+
+    calculateAngle(layerHeight, pixelSize) {
+      if (!layerHeight || layerHeight <= 0) return null;
+      if (!pixelSize || pixelSize <= 0) return null;
+
+      const radians = Math.atan(layerHeight / pixelSize);
+      const degrees = radians * (180 / Math.PI);
+      return Math.round(degrees * 100) / 100;
     },
 
     // ============================================================
