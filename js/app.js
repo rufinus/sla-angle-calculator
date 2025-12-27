@@ -10,6 +10,7 @@ document.addEventListener('alpine:init', () => {
     // ============================================================
 
     STORAGE_KEY: 'sla-calculator-favorites',
+    SETTINGS_KEY: 'sla-calculator-settings',
     MAX_FAVORITES: 20,
 
     // ============================================================
@@ -34,7 +35,14 @@ document.addEventListener('alpine:init', () => {
 
     init() {
       this.loadFavorites();
+      this.loadSettings();
       this.loadPrinters();
+
+      // Watch for changes and save settings
+      this.$watch('selectedPrinter', () => this.saveSettings());
+      this.$watch('layerHeight', () => this.saveSettings());
+      this.$watch('manualPixelX', () => this.saveSettings());
+      this.$watch('manualPixelY', () => this.saveSettings());
     },
 
     // ============================================================
@@ -62,6 +70,50 @@ document.addEventListener('alpine:init', () => {
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.favorites));
       } catch (error) {
         console.warn('Failed to save favorites:', error);
+      }
+    },
+
+    loadSettings() {
+      try {
+        const stored = localStorage.getItem(this.SETTINGS_KEY);
+        if (stored) {
+          const settings = JSON.parse(stored);
+          // Apply layer height
+          if (settings.layerHeight != null) {
+            this.layerHeight = settings.layerHeight;
+          }
+          // Store printer ID for later (after printers load)
+          if (settings.printerId) {
+            this._pendingPrinterId = settings.printerId;
+          } else {
+            // Apply manual pixel values if no printer was selected
+            if (settings.manualPixelX != null) {
+              this.manualPixelX = settings.manualPixelX;
+            }
+            if (settings.manualPixelY != null) {
+              this.manualPixelY = settings.manualPixelY;
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to load settings:', error);
+      }
+    },
+
+    saveSettings() {
+      try {
+        const settings = {
+          layerHeight: this.layerHeight
+        };
+        if (this.selectedPrinter) {
+          settings.printerId = this.selectedPrinter.id;
+        } else {
+          settings.manualPixelX = this.manualPixelX;
+          settings.manualPixelY = this.manualPixelY;
+        }
+        localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(settings));
+      } catch (error) {
+        console.warn('Failed to save settings:', error);
       }
     },
 
@@ -96,6 +148,14 @@ document.addEventListener('alpine:init', () => {
           throw new Error('SERVER_ERROR');
         }
         this.printers = await response.json();
+        // Apply pending printer selection from settings
+        if (this._pendingPrinterId) {
+          const printer = this.printers.find(p => p.id === this._pendingPrinterId);
+          if (printer) {
+            this.selectedPrinter = printer;
+          }
+          delete this._pendingPrinterId;
+        }
       } catch (error) {
         // Determine user-friendly error message
         if (!navigator.onLine) {
