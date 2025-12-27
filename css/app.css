@@ -207,8 +207,18 @@ select:focus-visible {
   border-bottom: none;
 }
 
-.dropdown-item:hover {
+.dropdown-item:hover,
+.dropdown-item.highlighted {
   background-color: var(--pico-primary-focus, rgba(16, 149, 193, 0.1));
+}
+
+.dropdown-item.highlighted {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.dropdown-item.highlighted .pixel-info {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .dropdown-item.loading,

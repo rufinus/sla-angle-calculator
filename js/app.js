@@ -17,6 +17,7 @@ document.addEventListener('alpine:init', () => {
     favorites: [],
     searchQuery: '',
     dropdownOpen: false,
+    highlightedIndex: 0,
     loading: false,
     jsonError: null,
 
@@ -105,6 +106,7 @@ document.addEventListener('alpine:init', () => {
     openDropdown() {
       this.dropdownOpen = true;
       this.searchQuery = '';
+      this.highlightedIndex = 0;
     },
 
     closeDropdown() {
@@ -121,6 +123,58 @@ document.addEventListener('alpine:init', () => {
 
     clearSelection() {
       this.selectedPrinter = null;
+    },
+
+    handleKeydown(event) {
+      if (!this.dropdownOpen) {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          this.openDropdown();
+          event.preventDefault();
+        }
+        return;
+      }
+
+      const printers = this.filteredPrinters;
+
+      switch (event.key) {
+        case 'ArrowDown':
+          this.highlightedIndex = Math.min(
+            this.highlightedIndex + 1,
+            printers.length - 1
+          );
+          this.scrollHighlightedIntoView();
+          event.preventDefault();
+          break;
+        case 'ArrowUp':
+          this.highlightedIndex = Math.max(this.highlightedIndex - 1, 0);
+          this.scrollHighlightedIntoView();
+          event.preventDefault();
+          break;
+        case 'Enter':
+          if (printers[this.highlightedIndex]) {
+            this.selectPrinter(printers[this.highlightedIndex]);
+          }
+          event.preventDefault();
+          break;
+        case 'Escape':
+          this.closeDropdown();
+          event.preventDefault();
+          break;
+      }
+    },
+
+    scrollHighlightedIntoView() {
+      this.$nextTick(() => {
+        const list = this.$refs.dropdownList;
+        const highlighted = list?.querySelector('.highlighted');
+        if (highlighted) {
+          highlighted.scrollIntoView({ block: 'nearest' });
+        }
+      });
+    },
+
+    resetHighlightOnSearch() {
+      this.highlightedIndex = 0;
     },
   }));
 });

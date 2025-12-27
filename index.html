@@ -25,22 +25,35 @@
                     x-model="searchQuery"
                     @focus="openDropdown()"
                     @blur.debounce.200ms="closeDropdown()"
+                    @keydown="handleKeydown($event)"
+                    @input="resetHighlightOnSearch()"
                     :placeholder="selectedPrinter ? '' : 'Search printers...'"
                     :value="selectedPrinter && !dropdownOpen ? selectedPrinter.manufacturer + ' ' + selectedPrinter.model : searchQuery"
                     autocomplete="off"
+                    role="combobox"
+                    aria-haspopup="listbox"
+                    :aria-expanded="dropdownOpen"
+                    aria-controls="printer-listbox"
                 />
-                <ul x-show="dropdownOpen" x-cloak class="dropdown-list">
+                <ul x-show="dropdownOpen" x-cloak x-ref="dropdownList" id="printer-listbox" role="listbox" class="dropdown-list">
                     <template x-if="loading">
-                        <li class="dropdown-item loading">Loading printers...</li>
+                        <li class="dropdown-item loading" role="option">Loading printers...</li>
                     </template>
                     <template x-if="jsonError">
-                        <li class="dropdown-item error" x-text="jsonError"></li>
+                        <li class="dropdown-item error" role="option" x-text="jsonError"></li>
                     </template>
                     <template x-if="!loading && !jsonError && filteredPrinters.length === 0">
-                        <li class="dropdown-item empty">No printers found</li>
+                        <li class="dropdown-item empty" role="option">No printers found</li>
                     </template>
-                    <template x-for="printer in filteredPrinters" :key="printer.id">
-                        <li class="dropdown-item" @mousedown.prevent="selectPrinter(printer)">
+                    <template x-for="(printer, index) in filteredPrinters" :key="printer.id">
+                        <li
+                            class="dropdown-item"
+                            :class="{ 'highlighted': index === highlightedIndex }"
+                            @mousedown.prevent="selectPrinter(printer)"
+                            @mouseenter="highlightedIndex = index"
+                            role="option"
+                            :aria-selected="index === highlightedIndex"
+                        >
                             <span class="printer-name" x-text="printer.manufacturer + ' ' + printer.model"></span>
                             <span class="pixel-info" x-text="printer.pixelX === printer.pixelY ? printer.pixelX + 'μm' : printer.pixelX + '×' + printer.pixelY + 'μm'"></span>
                         </li>
