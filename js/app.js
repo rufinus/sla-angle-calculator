@@ -220,19 +220,36 @@ document.addEventListener('alpine:init', () => {
     // SVG 2D TILTED RECTANGLE DIAGRAM (matches RC87 reference)
     // ============================================================
 
-    // Create a 2D tilted rectangle (side view)
+    // Create a 2D tilted rectangle (side view) using proper rotation
     // The angle parameter is the tilt angle from vertical
-    // Block tilts RIGHT (top shifts right relative to bottom)
+    // Block tilts RIGHT (rotates clockwise around bottom-left)
     createTiltedRect(cx, baseY, width, height, angle) {
       const radians = angle * Math.PI / 180;
-      // Horizontal shift of top edge (top shifts RIGHT as angle increases)
-      const shift = height * Math.tan(radians);
 
-      // Rectangle corners - tilting RIGHT
-      const bl = { x: cx - width/2, y: baseY };           // bottom-left (pivot point)
-      const br = { x: cx + width/2, y: baseY };           // bottom-right
-      const tl = { x: cx - width/2 + shift, y: baseY - height };  // top-left (shifted right)
-      const tr = { x: cx + width/2 + shift, y: baseY - height };  // top-right (shifted right)
+      // Define vertical rectangle corners (before rotation)
+      const corners = [
+        { x: cx - width/2, y: baseY },           // bottom-left
+        { x: cx + width/2, y: baseY },           // bottom-right
+        { x: cx + width/2, y: baseY - height },  // top-right
+        { x: cx - width/2, y: baseY - height }   // top-left
+      ];
+
+      // Pivot point: bottom-left corner of rectangle
+      const pivotX = cx - width/2;
+      const pivotY = baseY;
+
+      // Rotate each corner clockwise around pivot
+      let rotated = corners.map(c => ({
+        x: pivotX + (c.x - pivotX) * Math.cos(radians) - (c.y - pivotY) * Math.sin(radians),
+        y: pivotY + (c.x - pivotX) * Math.sin(radians) + (c.y - pivotY) * Math.cos(radians)
+      }));
+
+      // Find lowest point (max y) and shift up so it sits on baseY
+      const maxY = Math.max(...rotated.map(c => c.y));
+      const yOffset = maxY - baseY;
+      rotated = rotated.map(c => ({ x: c.x, y: c.y - yOffset }));
+
+      const [bl, br, tr, tl] = rotated;
 
       return {
         // Main rectangle polygon points
