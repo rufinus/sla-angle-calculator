@@ -1,0 +1,272 @@
+[
+  {
+    "id": "anycubic-photon-m3",
+    "manufacturer": "Anycubic",
+    "model": "Photon M3",
+    "pixelX": 50,
+    "pixelY": 50,
+    "resolutionX": 4096,
+    "resolutionY": 2560
+  },
+  {
+    "id": "anycubic-photon-m3-max",
+    "manufacturer": "Anycubic",
+    "model": "Photon M3 Max",
+    "pixelX": 57,
+    "pixelY": 57,
+    "resolutionX": 6480,
+    "resolutionY": 3600
+  },
+  {
+    "id": "anycubic-photon-m3-plus",
+    "manufacturer": "Anycubic",
+    "model": "Photon M3 Plus",
+    "pixelX": 50,
+    "pixelY": 50,
+    "resolutionX": 5760,
+    "resolutionY": 3600
+  },
+  {
+    "id": "anycubic-photon-m3-premium",
+    "manufacturer": "Anycubic",
+    "model": "Photon M3 Premium",
+    "pixelX": 43,
+    "pixelY": 43,
+    "resolutionX": 5760,
+    "resolutionY": 3600
+  },
+  {
+    "id": "anycubic-photon-mono-4k",
+    "manufacturer": "Anycubic",
+    "model": "Photon Mono 4K",
+    "pixelX": 35,
+    "pixelY": 35,
+    "resolutionX": 3840,
+    "resolutionY": 2400
+  },
+  {
+    "id": "anycubic-photon-mono-m5",
+    "manufacturer": "Anycubic",
+    "model": "Photon Mono M5",
+    "pixelX": 49,
+    "pixelY": 49,
+    "resolutionX": 7680,
+    "resolutionY": 4320
+  },
+  {
+    "id": "anycubic-photon-mono-m5s",
+    "manufacturer": "Anycubic",
+    "model": "Photon Mono M5s",
+    "pixelX": 48,
+    "pixelY": 48,
+    "resolutionX": 4096,
+    "resolutionY": 2560
+  },
+  {
+    "id": "anycubic-photon-mono-x-6ks",
+    "manufacturer": "Anycubic",
+    "model": "Photon Mono X 6Ks",
+    "pixelX": 34,
+    "pixelY": 34,
+    "resolutionX": 5760,
+    "resolutionY": 3600
+  },
+  {
+    "id": "creality-halot-mage",
+    "manufacturer": "Creality",
+    "model": "Halot-Mage",
+    "pixelX": 29,
+    "pixelY": 29,
+    "resolutionX": 7680,
+    "resolutionY": 4320
+  },
+  {
+    "id": "creality-halot-mage-pro",
+    "manufacturer": "Creality",
+    "model": "Halot-Mage Pro",
+    "pixelX": 29,
+    "pixelY": 29,
+    "resolutionX": 7680,
+    "resolutionY": 4320
+  },
+  {
+    "id": "creality-halot-one",
+    "manufacturer": "Creality",
+    "model": "Halot-One",
+    "pixelX": 50,
+    "pixelY": 50,
+    "resolutionX": 2560,
+    "resolutionY": 1620
+  },
+  {
+    "id": "creality-halot-one-plus",
+    "manufacturer": "Creality",
+    "model": "Halot-One Plus",
+    "pixelX": 47,
+    "pixelY": 47,
+    "resolutionX": 3840,
+    "resolutionY": 2400
+  },
+  {
+    "id": "elegoo-mars-2",
+    "manufacturer": "Elegoo",
+    "model": "Mars 2",
+    "pixelX": 50,
+    "pixelY": 50,
+    "resolutionX": 2560,
+    "resolutionY": 1620
+  },
+  {
+    "id": "elegoo-mars-2-pro",
+    "manufacturer": "Elegoo",
+    "model": "Mars 2 Pro",
+    "pixelX": 50,
+    "pixelY": 50,
+    "resolutionX": 2560,
+    "resolutionY": 1620
+  },
+  {
+    "id": "elegoo-mars-3",
+    "manufacturer": "Elegoo",
+    "model": "Mars 3",
+    "pixelX": 35,
+    "pixelY": 35,
+    "resolutionX": 4098,
+    "resolutionY": 2560
+  },
+  {
+    "id": "elegoo-mars-3-pro",
+    "manufacturer": "Elegoo",
+    "model": "Mars 3 Pro",
+    "pixelX": 35,
+    "pixelY": 35,
+    "resolutionX": 4098,
+    "resolutionY": 2560
+  },
+  {
+    "id": "elegoo-mars-4",
+    "manufacturer": "Elegoo",
+    "model": "Mars 4",
+    "pixelX": 35,
+    "pixelY": 35,
+    "resolutionX": 5760,
+    "resolutionY": 3600
+  },
+  {
+    "id": "elegoo-mars-4-dlp",
+    "manufacturer": "Elegoo",
+    "model": "Mars 4 DLP",
+    "pixelX": 35,
+    "pixelY": 35,
+    "resolutionX": 3840,
+    "resolutionY": 2160
+  },
+  {
+    "id": "elegoo-mars-4-max",
+    "manufacturer": "Elegoo",
+    "model": "Mars 4 Max",
+    "pixelX": 34,
+    "pixelY": 34,
+    "resolutionX": 5760,
+    "resolutionY": 3600
+  },
+  {
+    "id": "elegoo-mars-4-ultra",
+    "manufacturer": "Elegoo",
+    "model": "Mars 4 Ultra",
+    "pixelX": 18,
+    "pixelY": 18,
+    "resolutionX": 7680,
+    "resolutionY": 4320
+  },
+  {
+    "id": "elegoo-saturn-2",
+    "manufacturer": "Elegoo",
+    "model": "Saturn 2",
+    "pixelX": 28.5,
+    "pixelY": 28.5,
+    "resolutionX": 7680,
+    "resolutionY": 4320
+  },
+  {
+    "id": "elegoo-saturn-3",
+    "manufacturer": "Elegoo",
+    "model": "Saturn 3",
+    "pixelX": 28.5,
+    "pixelY": 28.5,
+    "resolutionX": 7680,
+    "resolutionY": 4320
+  },
+  {
+    "id": "elegoo-saturn-3-ultra",
+    "manufacturer": "Elegoo",
+    "model": "Saturn 3 Ultra",
+    "pixelX": 19,
+    "pixelY": 19,
+    "resolutionX": 11520,
+    "resolutionY": 5120
+  },
+  {
+    "id": "phrozen-mini-4k",
+    "manufacturer": "Phrozen",
+    "model": "Sonic Mini 4K",
+    "pixelX": 35,
+    "pixelY": 35,
+    "resolutionX": 3840,
+    "resolutionY": 2160
+  },
+  {
+    "id": "phrozen-mighty-4k",
+    "manufacturer": "Phrozen",
+    "model": "Sonic Mighty 4K",
+    "pixelX": 52,
+    "pixelY": 52,
+    "resolutionX": 3840,
+    "resolutionY": 2400
+  },
+  {
+    "id": "phrozen-mega-8k",
+    "manufacturer": "Phrozen",
+    "model": "Sonic Mega 8K",
+    "pixelX": 43,
+    "pixelY": 43,
+    "resolutionX": 7680,
+    "resolutionY": 4320
+  },
+  {
+    "id": "phrozen-mini-8k",
+    "manufacturer": "Phrozen",
+    "model": "Sonic Mini 8K",
+    "pixelX": 22,
+    "pixelY": 22,
+    "resolutionX": 7500,
+    "resolutionY": 3240
+  },
+  {
+    "id": "phrozen-sonic-mini-8ks",
+    "manufacturer": "Phrozen",
+    "model": "Sonic Mini 8Ks",
+    "pixelX": 22,
+    "pixelY": 22,
+    "resolutionX": 7680,
+    "resolutionY": 4320
+  },
+  {
+    "id": "prusa-sl1",
+    "manufacturer": "Prusa",
+    "model": "SL1",
+    "pixelX": 47,
+    "pixelY": 47,
+    "resolutionX": 2560,
+    "resolutionY": 1440
+  },
+  {
+    "id": "prusa-sl1s",
+    "manufacturer": "Prusa",
+    "model": "SL1S Speed",
+    "pixelX": 49,
+    "pixelY": 49,
+    "resolutionX": 2560,
+    "resolutionY": 1620
+  }
+]
