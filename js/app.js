@@ -151,28 +151,27 @@ document.addEventListener('alpine:init', () => {
     },
 
     get filteredPrinters() {
-      if (!this.searchQuery.trim()) {
-        return this.sortWithFavorites(this.printers);
-      }
-
       const query = this.searchQuery.toLowerCase().trim();
-      const filtered = this.printers.filter(printer => {
+      if (!query) {
+        return this.printers;
+      }
+      return this.printers.filter(printer => {
         const name = `${printer.manufacturer} ${printer.model}`.toLowerCase();
         return name.includes(query);
       });
-
-      return this.sortWithFavorites(filtered);
     },
 
-    sortWithFavorites(printers) {
-      const favoriteIds = new Set(this.favorites);
-      return [...printers].sort((a, b) => {
-        const aFav = favoriteIds.has(a.id);
-        const bFav = favoriteIds.has(b.id);
-        if (aFav && !bFav) return -1;
-        if (!aFav && bFav) return 1;
-        return 0;
-      });
+    get filteredFavorites() {
+      return this.filteredPrinters.filter(p => this.favorites.includes(p.id));
+    },
+
+    get filteredNonFavorites() {
+      return this.filteredPrinters.filter(p => !this.favorites.includes(p.id));
+    },
+
+    get allDropdownItems() {
+      // Combined list for keyboard navigation: favorites first, then non-favorites
+      return [...this.filteredFavorites, ...this.filteredNonFavorites];
     },
 
     get isManualMode() {
@@ -234,13 +233,13 @@ document.addEventListener('alpine:init', () => {
         return;
       }
 
-      const printers = this.filteredPrinters;
+      const items = this.allDropdownItems;
 
       switch (event.key) {
         case 'ArrowDown':
           this.highlightedIndex = Math.min(
             this.highlightedIndex + 1,
-            printers.length - 1
+            items.length - 1
           );
           this.scrollHighlightedIntoView();
           event.preventDefault();
@@ -251,8 +250,8 @@ document.addEventListener('alpine:init', () => {
           event.preventDefault();
           break;
         case 'Enter':
-          if (printers[this.highlightedIndex]) {
-            this.selectPrinter(printers[this.highlightedIndex]);
+          if (items[this.highlightedIndex]) {
+            this.selectPrinter(items[this.highlightedIndex]);
           }
           event.preventDefault();
           break;

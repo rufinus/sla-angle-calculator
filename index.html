@@ -42,18 +42,51 @@
                     <template x-if="jsonError">
                         <li class="dropdown-item error" role="option" x-text="jsonError"></li>
                     </template>
-                    <template x-if="!loading && !jsonError && filteredPrinters.length === 0">
+                    <template x-if="!loading && !jsonError && filteredPrinters.length === 0 && filteredFavorites.length === 0">
                         <li class="dropdown-item empty" role="option">No printers found</li>
                     </template>
-                    <template x-for="(printer, index) in filteredPrinters" :key="printer.id">
+
+                    <!-- Favorites Section -->
+                    <template x-if="!loading && !jsonError && filteredFavorites.length > 0">
+                        <li class="dropdown-section-header">Favorites</li>
+                    </template>
+                    <template x-for="(printer, index) in filteredFavorites" :key="'fav-' + printer.id">
                         <li
-                            class="dropdown-item"
+                            class="dropdown-item favorite"
                             :class="{ 'highlighted': index === highlightedIndex }"
                             @mousedown.prevent="selectPrinter(printer)"
                             @mouseenter="highlightedIndex = index"
                             role="option"
                             :aria-selected="index === highlightedIndex"
                         >
+                            <button
+                                class="star-btn"
+                                @mousedown.stop="toggleFavorite(printer.id)"
+                                aria-label="Remove from favorites"
+                            >★</button>
+                            <span class="printer-name" x-text="printer.manufacturer + ' ' + printer.model"></span>
+                            <span class="pixel-info" x-text="printer.pixelX === printer.pixelY ? printer.pixelX + 'μm' : printer.pixelX + '×' + printer.pixelY + 'μm'"></span>
+                        </li>
+                    </template>
+
+                    <!-- All Printers Section -->
+                    <template x-if="!loading && !jsonError && filteredFavorites.length > 0 && filteredNonFavorites.length > 0">
+                        <li class="dropdown-section-header">All Printers</li>
+                    </template>
+                    <template x-for="(printer, index) in filteredNonFavorites" :key="printer.id">
+                        <li
+                            class="dropdown-item"
+                            :class="{ 'highlighted': (filteredFavorites.length + index) === highlightedIndex }"
+                            @mousedown.prevent="selectPrinter(printer)"
+                            @mouseenter="highlightedIndex = filteredFavorites.length + index"
+                            role="option"
+                            :aria-selected="(filteredFavorites.length + index) === highlightedIndex"
+                        >
+                            <button
+                                class="star-btn"
+                                @mousedown.stop="toggleFavorite(printer.id)"
+                                :aria-label="isFavorite(printer.id) ? 'Remove from favorites' : 'Add to favorites'"
+                            >☆</button>
                             <span class="printer-name" x-text="printer.manufacturer + ' ' + printer.model"></span>
                             <span class="pixel-info" x-text="printer.pixelX === printer.pixelY ? printer.pixelX + 'μm' : printer.pixelX + '×' + printer.pixelY + 'μm'"></span>
                         </li>
