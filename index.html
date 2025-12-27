@@ -6,19 +6,21 @@
     <title>SLA Angle Calculator</title>
     <link rel="stylesheet" href="vendor/pico.min.css">
     <link rel="stylesheet" href="css/app.css">
-    <script defer src="vendor/alpine.min.js"></script>
     <script defer src="js/app.js"></script>
+    <script defer src="vendor/alpine.min.js"></script>
 </head>
 <body>
+    <a href="#results-section" class="skip-link">Skip to results</a>
     <main class="container" x-data="calculator" x-cloak>
         <header>
             <h1>SLA Angle Calculator</h1>
             <p>Based on the original calculator by RC87</p>
         </header>
 
-        <section class="printer-selector">
-            <label for="printer-search">Select Printer</label>
-            <div class="dropdown-wrapper">
+        <section class="printer-selector-row">
+            <div class="printer-selector">
+                <label for="printer-search">Select Printer</label>
+                <div class="dropdown-wrapper">
                 <input
                     id="printer-search"
                     type="text"
@@ -34,13 +36,38 @@
                     aria-haspopup="listbox"
                     :aria-expanded="dropdownOpen"
                     aria-controls="printer-listbox"
+                    aria-autocomplete="list"
+                    :aria-activedescendant="dropdownOpen && allDropdownItems[highlightedIndex] ? 'printer-option-' + allDropdownItems[highlightedIndex].id : null"
                 />
                 <ul x-show="dropdownOpen" x-cloak x-ref="dropdownList" id="printer-listbox" role="listbox" class="dropdown-list">
                     <template x-if="loading">
-                        <li class="dropdown-item loading" role="option">Loading printers...</li>
+                        <li class="dropdown-item loading-skeleton" role="option" aria-label="Loading printers">
+                            <div class="skeleton-items" aria-hidden="true">
+                                <div class="skeleton-item">
+                                    <span class="skeleton skeleton-name"></span>
+                                    <span class="skeleton skeleton-pixel"></span>
+                                </div>
+                                <div class="skeleton-item">
+                                    <span class="skeleton skeleton-name"></span>
+                                    <span class="skeleton skeleton-pixel"></span>
+                                </div>
+                                <div class="skeleton-item">
+                                    <span class="skeleton skeleton-name"></span>
+                                    <span class="skeleton skeleton-pixel"></span>
+                                </div>
+                            </div>
+                            <span class="visually-hidden">Loading printers...</span>
+                        </li>
                     </template>
                     <template x-if="jsonError">
-                        <li class="dropdown-item error" role="option" x-text="jsonError"></li>
+                        <li class="dropdown-item error" role="option">
+                            <span x-text="jsonError"></span>
+                            <button
+                                class="retry-btn"
+                                @mousedown.prevent.stop="loadPrinters()"
+                                aria-label="Retry loading printers"
+                            >Retry</button>
+                        </li>
                     </template>
                     <template x-if="!loading && !jsonError && filteredPrinters.length === 0 && filteredFavorites.length === 0">
                         <li class="dropdown-item empty" role="option">No printers found</li>
@@ -48,10 +75,11 @@
 
                     <!-- Favorites Section -->
                     <template x-if="!loading && !jsonError && filteredFavorites.length > 0">
-                        <li class="dropdown-section-header">Favorites</li>
+                        <li class="dropdown-section-header" role="presentation">Favorites</li>
                     </template>
                     <template x-for="(printer, index) in filteredFavorites" :key="'fav-' + printer.id">
                         <li
+                            :id="'printer-option-' + printer.id"
                             class="dropdown-item favorite"
                             :class="{ 'highlighted': index === highlightedIndex }"
                             @mousedown.prevent="selectPrinter(printer)"
@@ -71,10 +99,11 @@
 
                     <!-- All Printers Section -->
                     <template x-if="!loading && !jsonError && filteredFavorites.length > 0 && filteredNonFavorites.length > 0">
-                        <li class="dropdown-section-header">All Printers</li>
+                        <li class="dropdown-section-header" role="presentation">All Printers</li>
                     </template>
                     <template x-for="(printer, index) in filteredNonFavorites" :key="printer.id">
                         <li
+                            :id="'printer-option-' + printer.id"
                             class="dropdown-item"
                             :class="{ 'highlighted': (filteredFavorites.length + index) === highlightedIndex }"
                             @mousedown.prevent="selectPrinter(printer)"
@@ -92,6 +121,28 @@
                         </li>
                     </template>
                 </ul>
+                </div>
+            </div>
+            <div class="layer-height-control">
+                <label for="layer-height">Layer Height (μm)</label>
+                <input
+                    id="layer-height"
+                    type="number"
+                    x-model.number="layerHeight"
+                    min="10"
+                    max="200"
+                    step="1"
+                    :aria-invalid="validationErrors.layerHeight ? 'true' : 'false'"
+                    :aria-describedby="validationErrors.layerHeight ? 'error-layer-height' : null"
+                    :class="{ 'error': validationErrors.layerHeight }"
+                />
+                <span
+                    id="error-layer-height"
+                    class="error-message"
+                    x-show="validationErrors.layerHeight"
+                    x-text="validationErrors.layerHeight"
+                    role="alert"
+                ></span>
             </div>
         </section>
 
@@ -108,9 +159,16 @@
                         max="200"
                         step="0.1"
                         :aria-invalid="validationErrors.manualPixelX ? 'true' : 'false'"
+                        :aria-describedby="validationErrors.manualPixelX ? 'error-pixel-x' : null"
                         :class="{ 'error': validationErrors.manualPixelX }"
                     />
-                    <span class="error-message" x-show="validationErrors.manualPixelX" x-text="validationErrors.manualPixelX"></span>
+                    <span
+                        id="error-pixel-x"
+                        class="error-message"
+                        x-show="validationErrors.manualPixelX"
+                        x-text="validationErrors.manualPixelX"
+                        role="alert"
+                    ></span>
                 </div>
                 <div class="field">
                     <label for="manual-pixel-y">Pixel Y (μm)</label>
@@ -122,118 +180,191 @@
                         max="200"
                         step="0.1"
                         :aria-invalid="validationErrors.manualPixelY ? 'true' : 'false'"
+                        :aria-describedby="validationErrors.manualPixelY ? 'error-pixel-y' : null"
                         :class="{ 'error': validationErrors.manualPixelY }"
                     />
-                    <span class="error-message" x-show="validationErrors.manualPixelY" x-text="validationErrors.manualPixelY"></span>
+                    <span
+                        id="error-pixel-y"
+                        class="error-message"
+                        x-show="validationErrors.manualPixelY"
+                        x-text="validationErrors.manualPixelY"
+                        role="alert"
+                    ></span>
                 </div>
             </div>
         </section>
 
-        <section class="results" x-show="canShowResults">
-            <h2>Calculated Angle<span x-show="!hasSquarePixels">s</span></h2>
+        <section id="results-section" class="results" x-show="canShowResults" role="region" aria-labelledby="results-heading">
+            <h2 id="results-heading">Calculated Angle<span x-show="!hasSquarePixels">s</span></h2>
 
             <!-- Square pixels: single angle -->
             <template x-if="hasSquarePixels">
-                <div class="angle-display single">
-                    <span class="angle-value" x-text="angleX?.toFixed(2) ?? '--'"></span>
-                    <span class="angle-unit">°</span>
+                <div class="angle-display single" aria-live="polite">
+                    <span class="angle-label" x-text="'Angle (' + currentPixelX + 'μm)'"></span>
+                    <div class="angle-row">
+                        <span class="angle-value" x-text="angleX?.toFixed(2) ?? '--'"></span>
+                        <span class="angle-unit">°</span>
+                    </div>
+                    <span class="complementary-angle" x-text="(complementaryAngleX?.toFixed(2) ?? '--') + '°'"></span>
                 </div>
             </template>
 
             <!-- Non-square pixels: two angles -->
             <template x-if="!hasSquarePixels">
-                <div class="angle-display dual">
+                <div class="angle-display dual" aria-live="polite">
                     <div class="angle-column">
-                        <span class="angle-label">X Angle</span>
+                        <span class="angle-label" x-text="'X Angle (' + currentPixelX + 'μm)'"></span>
                         <div class="angle-row">
                             <span class="angle-value" x-text="angleX?.toFixed(2) ?? '--'"></span>
                             <span class="angle-unit">°</span>
                         </div>
-                        <span class="pixel-size" x-text="currentPixelX + 'μm'"></span>
+                        <span class="complementary-angle" x-text="(complementaryAngleX?.toFixed(2) ?? '--') + '°'"></span>
                     </div>
                     <div class="angle-column">
-                        <span class="angle-label">Y Angle</span>
+                        <span class="angle-label" x-text="'Y Angle (' + currentPixelY + 'μm)'"></span>
                         <div class="angle-row">
                             <span class="angle-value" x-text="angleY?.toFixed(2) ?? '--'"></span>
                             <span class="angle-unit">°</span>
                         </div>
-                        <span class="pixel-size" x-text="currentPixelY + 'μm'"></span>
+                        <span class="complementary-angle" x-text="(complementaryAngleY?.toFixed(2) ?? '--') + '°'"></span>
                     </div>
                 </div>
             </template>
 
-            <div class="layer-height-control">
-                <label for="layer-height">Layer Height (μm)</label>
-                <input
-                    id="layer-height"
-                    type="number"
-                    x-model.number="layerHeight"
-                    min="10"
-                    max="200"
-                    step="1"
-                    :aria-invalid="validationErrors.layerHeight ? 'true' : 'false'"
-                    :class="{ 'error': validationErrors.layerHeight }"
-                />
-                <span class="error-message" x-show="validationErrors.layerHeight" x-text="validationErrors.layerHeight"></span>
-            </div>
-
-            <div class="pixel-info-display">
-                <span class="badge" x-text="hasSquarePixels ? 'Square Pixels' : 'Non-Square Pixels'"></span>
-                <span x-show="hasSquarePixels" x-text="currentPixelX + 'μm'"></span>
-            </div>
-
-            <!-- Angle Diagram -->
+            <!-- Angle Diagram - 2D tilted rectangles matching RC87 reference -->
             <svg
                 class="angle-diagram"
-                viewBox="0 0 400 280"
+                viewBox="0 0 600 280"
                 role="img"
                 aria-labelledby="diagram-title diagram-desc"
             >
                 <title id="diagram-title">Angle Diagram</title>
-                <desc id="diagram-desc" x-text="'Visual representation of ' + diagramAngle.toFixed(1) + '° tilt angle'">Visual representation of tilt angle calculation</desc>
+                <desc id="diagram-desc" x-text="hasSquarePixels ? 'Visual representation of ' + (angleX?.toFixed(1) ?? '--') + '° tilt angle' : 'Visual representation showing X angle ' + (angleX?.toFixed(1) ?? '--') + '° and Y angle ' + (angleY?.toFixed(1) ?? '--') + '°'">Visual representation of tilt angles</desc>
 
-                <!-- Build plate -->
-                <line x1="50" y1="220" x2="350" y2="220" class="build-plate" />
-                <text x="200" y="260" class="diagram-label">Build Plate</text>
+                <!-- Build plate (dark bar at bottom) -->
+                <rect :x="hasSquarePixels ? 30 : 20" y="240" :width="hasSquarePixels ? 390 : 560" height="20" class="build-plate" />
 
-                <!-- Model surface (angled line) - dynamic angle -->
-                <line
-                    x1="100"
-                    y1="220"
-                    :x2="diagramEndpoint.x"
-                    :y2="diagramEndpoint.y"
-                    class="model-surface"
-                />
+                <!-- SQUARE PIXELS: Single centered block -->
+                <g x-show="hasSquarePixels">
+                    <!-- Tilted rectangle (gray fill) -->
+                    <polygon :points="singleBlockData.rect.points" class="tilted-block" />
+                    <!-- Green left edge -->
+                    <line
+                        :x1="singleBlockData.rect.leftEdge.x1"
+                        :y1="singleBlockData.rect.leftEdge.y1"
+                        :x2="singleBlockData.rect.leftEdge.x2"
+                        :y2="singleBlockData.rect.leftEdge.y2"
+                        class="block-left-edge"
+                    />
 
-                <!-- Layer height indicator (vertical dashed line) -->
-                <line x1="100" y1="220" :x2="diagramLayerHeight.x" :y2="diagramLayerHeight.y" class="dimension-line" />
-                <line x1="95" y1="220" x2="105" y2="220" class="dimension-cap" />
-                <line x1="95" :y1="diagramLayerHeight.y" x2="105" :y2="diagramLayerHeight.y" class="dimension-cap" />
-                <text x="70" :y="(220 + diagramLayerHeight.y) / 2 + 5" class="dimension-label" x-text="layerHeight + 'μm'">LH</text>
+                    <!-- Vertical reference line -->
+                    <line
+                        :x1="singleBlockData.vertLine.x1"
+                        :y1="singleBlockData.vertLine.y1"
+                        :x2="singleBlockData.vertLine.x2"
+                        :y2="singleBlockData.vertLine.y2"
+                        class="vertical-reference-line"
+                    />
 
-                <!-- Pixel size indicator (horizontal dashed line) -->
-                <line x1="100" y1="235" x2="180" y2="235" class="dimension-line" />
-                <line x1="100" y1="230" x2="100" y2="240" class="dimension-cap" />
-                <line x1="180" y1="230" x2="180" y2="240" class="dimension-cap" />
-                <text x="140" y="255" class="dimension-label" x-text="(currentPixelX ?? '--') + 'μm'">PX</text>
+                    <!-- Single arc from vertical to horizontal -->
+                    <path :d="singleBlockData.arcPath" class="angle-arc" />
+                    <text
+                        :x="singleBlockData.arc1LabelPos.x"
+                        :y="singleBlockData.arc1LabelPos.y"
+                        class="angle-label"
+                        x-text="(angleX?.toFixed(4) ?? '--') + '°'"
+                    ></text>
+                    <text
+                        :x="singleBlockData.arc2LabelPos.x"
+                        :y="singleBlockData.arc2LabelPos.y"
+                        class="angle-label-complement"
+                        x-text="(complementaryAngleX?.toFixed(4) ?? '--') + '°'"
+                    ></text>
+                </g>
 
-                <!-- Angle arc - dynamic path -->
-                <path :d="angleArcPath" class="angle-arc" fill="none" />
-                <text
-                    :x="angleLabelPosition.x"
-                    :y="angleLabelPosition.y"
-                    class="angle-label"
-                    x-text="diagramAngle.toFixed(1) + '°'"
-                >θ</text>
+                <!-- NON-SQUARE PIXELS: Two blocks side by side -->
+                <g x-show="!hasSquarePixels">
+                    <!-- X Block (left side) -->
+                    <g class="x-block-group">
+                        <polygon :points="xBlockData.rect.points" class="tilted-block" />
+                        <line
+                            :x1="xBlockData.rect.leftEdge.x1"
+                            :y1="xBlockData.rect.leftEdge.y1"
+                            :x2="xBlockData.rect.leftEdge.x2"
+                            :y2="xBlockData.rect.leftEdge.y2"
+                            class="block-left-edge"
+                        />
 
-                <!-- Right angle indicator at origin -->
-                <path d="M 100 210 L 110 210 L 110 220" class="right-angle" fill="none" />
+                        <!-- Vertical reference line -->
+                        <line
+                            :x1="xBlockData.vertLine.x1"
+                            :y1="xBlockData.vertLine.y1"
+                            :x2="xBlockData.vertLine.x2"
+                            :y2="xBlockData.vertLine.y2"
+                            class="vertical-reference-line"
+                        />
+
+                        <!-- Single arc from vertical to horizontal -->
+                        <path :d="xBlockData.arcPath" class="angle-arc" />
+                        <text
+                            :x="xBlockData.arc1LabelPos.x"
+                            :y="xBlockData.arc1LabelPos.y"
+                            class="angle-label"
+                            x-text="(angleX?.toFixed(4) ?? '--') + '°'"
+                        ></text>
+                        <text
+                            :x="xBlockData.arc2LabelPos.x"
+                            :y="xBlockData.arc2LabelPos.y"
+                            class="angle-label-complement"
+                            x-text="(complementaryAngleX?.toFixed(4) ?? '--') + '°'"
+                        ></text>
+
+                        <!-- X Label -->
+                        <text x="140" y="270" class="block-axis-label">X</text>
+                    </g>
+
+                    <!-- Y Block (right side) -->
+                    <g class="y-block-group">
+                        <polygon :points="yBlockData.rect.points" class="tilted-block" />
+                        <line
+                            :x1="yBlockData.rect.leftEdge.x1"
+                            :y1="yBlockData.rect.leftEdge.y1"
+                            :x2="yBlockData.rect.leftEdge.x2"
+                            :y2="yBlockData.rect.leftEdge.y2"
+                            class="block-left-edge"
+                        />
+
+                        <!-- Vertical reference line -->
+                        <line
+                            :x1="yBlockData.vertLine.x1"
+                            :y1="yBlockData.vertLine.y1"
+                            :x2="yBlockData.vertLine.x2"
+                            :y2="yBlockData.vertLine.y2"
+                            class="vertical-reference-line"
+                        />
+
+                        <!-- Single arc from vertical to horizontal -->
+                        <path :d="yBlockData.arcPath" class="angle-arc" />
+                        <text
+                            :x="yBlockData.arc1LabelPos.x"
+                            :y="yBlockData.arc1LabelPos.y"
+                            class="angle-label"
+                            x-text="(angleY?.toFixed(4) ?? '--') + '°'"
+                        ></text>
+                        <text
+                            :x="yBlockData.arc2LabelPos.x"
+                            :y="yBlockData.arc2LabelPos.y"
+                            class="angle-label-complement"
+                            x-text="(complementaryAngleY?.toFixed(4) ?? '--') + '°'"
+                        ></text>
+
+                        <!-- Y Label -->
+                        <text x="420" y="270" class="block-axis-label">Y</text>
+                    </g>
+                </g>
             </svg>
         </section>
 
-        <footer>
-            <a href="impressum.html">Impressum</a>
-        </footer>
     </main>
 </body>
 </html>

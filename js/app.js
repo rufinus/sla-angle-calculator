@@ -88,13 +88,25 @@ document.addEventListener('alpine:init', () => {
       this.jsonError = null;
 
       try {
-        const response = await fetch('data/printers.json');
+        const response = await fetch('data/printers.json?_=' + Date.now());
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+          if (response.status === 404) {
+            throw new Error('NOT_FOUND');
+          }
+          throw new Error('SERVER_ERROR');
         }
         this.printers = await response.json();
       } catch (error) {
-        this.jsonError = 'Failed to load printer database';
+        // Determine user-friendly error message
+        if (!navigator.onLine) {
+          this.jsonError = 'No internet connection';
+        } else if (error.message === 'NOT_FOUND') {
+          this.jsonError = 'Printer database not found';
+        } else if (error.name === 'SyntaxError') {
+          this.jsonError = 'Invalid printer data';
+        } else {
+          this.jsonError = 'Failed to load printers';
+        }
         console.error('Printer load error:', error);
       } finally {
         this.loading = false;
@@ -133,7 +145,11 @@ document.addEventListener('alpine:init', () => {
     },
 
     get canShowResults() {
-      return this.angleX !== null && this.isValid;
+      // Show results section if we have pixel data (from printer or manual input)
+      // Don't hide based on layer height validation - angles will show "--" if invalid
+      const hasPixelData = this.selectedPrinter !== null ||
+        (this.manualPixelX !== null && this.manualPixelY !== null);
+      return hasPixelData;
     },
 
     get hasSquarePixels() {
@@ -193,75 +209,179 @@ document.addEventListener('alpine:init', () => {
       if (!layerHeight || layerHeight <= 0) return null;
       if (!pixelSize || pixelSize <= 0) return null;
 
-      const radians = Math.atan(layerHeight / pixelSize);
+      // Angle from vertical (tilt angle) = atan(pixelSize / layerHeight)
+      // This matches RC87 reference: for pixel=20, layer=50 → 21.8°
+      const radians = Math.atan(pixelSize / layerHeight);
       const degrees = radians * (180 / Math.PI);
-      return Math.round(degrees * 100) / 100;
+      return Math.round(degrees * 10000) / 10000;
     },
 
     // ============================================================
-    // SVG DIAGRAM CALCULATIONS
+    // SVG 2D TILTED RECTANGLE DIAGRAM (matches RC87 reference)
     // ============================================================
 
-    // Diagram coordinate system constants
-    DIAGRAM_START_X: 100,
-    DIAGRAM_START_Y: 220,
-    DIAGRAM_LINE_LENGTH: 180,
-    DIAGRAM_ARC_RADIUS: 40,
+    // Create a 2D tilted rectangle (side view)
+    // The angle parameter is the tilt angle from vertical
+    // Block tilts RIGHT (top shifts right relative to bottom)
+    createTiltedRect(cx, baseY, width, height, angle) {
+      const radians = angle * Math.PI / 180;
+      // Horizontal shift of top edge (top shifts RIGHT as angle increases)
+      const shift = height * Math.tan(radians);
 
-    get diagramAngle() {
-      // Use angleX for diagram, default to 45° when no valid angle
-      return this.angleX ?? 45;
+      // Rectangle corners - tilting RIGHT
+      const bl = { x: cx - width/2, y: baseY };           // bottom-left (pivot point)
+      const br = { x: cx + width/2, y: baseY };           // bottom-right
+      const tl = { x: cx - width/2 + shift, y: baseY - height };  // top-left (shifted right)
+      const tr = { x: cx + width/2 + shift, y: baseY - height };  // top-right (shifted right)
+
+      return {
+        // Main rectangle polygon points
+        points: `${bl.x},${bl.y} ${br.x},${br.y} ${tr.x},${tr.y} ${tl.x},${tl.y}`,
+        // Left edge (green highlight) - from bottom-left to top-left
+        leftEdge: { x1: bl.x, y1: bl.y, x2: tl.x, y2: tl.y },
+        // Corner positions for angle indicators
+        corners: { bl, br, tl, tr }
+      };
     },
 
-    get diagramEndpoint() {
-      const angle = this.diagramAngle;
-      const radians = angle * (Math.PI / 180);
+    // Create arc path for angle visualization
+    // sweepFlag: 0 = counter-clockwise, 1 = clockwise
+    createArcPath(cx, cy, radius, startAngle, endAngle, sweepFlag = 0) {
+      const startRad = startAngle * Math.PI / 180;
+      const endRad = endAngle * Math.PI / 180;
 
-      const endX = this.DIAGRAM_START_X + this.DIAGRAM_LINE_LENGTH * Math.cos(radians);
-      const endY = this.DIAGRAM_START_Y - this.DIAGRAM_LINE_LENGTH * Math.sin(radians);
+      const x1 = cx + radius * Math.cos(startRad);
+      const y1 = cy - radius * Math.sin(startRad);
+      const x2 = cx + radius * Math.cos(endRad);
+      const y2 = cy - radius * Math.sin(endRad);
 
-      return { x: Math.round(endX), y: Math.round(endY) };
+      const largeArc = Math.abs(endAngle - startAngle) > 180 ? 1 : 0;
+
+      return `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} ${sweepFlag} ${x2} ${y2}`;
     },
 
-    get diagramLayerHeight() {
-      // Calculate the visual layer height endpoint based on angle
-      const angle = this.diagramAngle;
-      const radians = angle * (Math.PI / 180);
-
-      // Use a fixed visual ratio for the layer height indicator
-      const visualHeight = 80;
-      const endY = this.DIAGRAM_START_Y - visualHeight;
-
-      return { x: this.DIAGRAM_START_X, y: endY };
+    // Complementary angles (90 - angle)
+    get complementaryAngleX() {
+      return this.angleX ? (90 - this.angleX) : null;
     },
 
-    get angleArcPath() {
-      const angle = this.diagramAngle;
-      const radians = angle * (Math.PI / 180);
-      const radius = this.DIAGRAM_ARC_RADIUS;
-
-      const startX = this.DIAGRAM_START_X + radius;
-      const startY = this.DIAGRAM_START_Y;
-
-      const endX = this.DIAGRAM_START_X + radius * Math.cos(radians);
-      const endY = this.DIAGRAM_START_Y - radius * Math.sin(radians);
-
-      // Large arc flag: 0 for angles < 180°
-      const largeArc = angle > 180 ? 1 : 0;
-
-      return `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArc} 0 ${Math.round(endX)} ${Math.round(endY)}`;
+    get complementaryAngleY() {
+      return this.angleY ? (90 - this.angleY) : null;
     },
 
-    get angleLabelPosition() {
-      // Position the angle label just outside the arc
-      const angle = this.diagramAngle;
-      const radians = (angle / 2) * (Math.PI / 180); // Middle of the arc
-      const labelRadius = this.DIAGRAM_ARC_RADIUS + 20;
+    // Single block for square pixels (centered at x=200)
+    get singleBlockData() {
+      const angle = this.angleX ?? 45;
+      const baseY = 240;
+      const height = 160;
+      const width = 50;
+      const rect = this.createTiltedRect(200, baseY, width, height, angle);
 
-      const x = this.DIAGRAM_START_X + labelRadius * Math.cos(radians);
-      const y = this.DIAGRAM_START_Y - labelRadius * Math.sin(radians);
+      const vertLineX = rect.corners.bl.x - 35;
+      const vertLineLen = height + 20;
+      const vertLine = {
+        x1: vertLineX,
+        y1: baseY,
+        x2: vertLineX,
+        y2: baseY - vertLineLen
+      };
 
-      return { x: Math.round(x), y: Math.round(y) };
+      const vertLineMidY = baseY - vertLineLen / 2;
+      const arcRadius = baseY - vertLineMidY;
+      const arcCenterY = baseY;
+      const arcPath = this.createArcPath(vertLineX, arcCenterY, arcRadius, 90, 0, 1);
+
+      const angle1Pos = 79 * Math.PI / 180;
+      const arc1LabelX = vertLineX + (arcRadius + 12) * Math.cos(angle1Pos);
+      const arc1LabelY = arcCenterY - (arcRadius + 12) * Math.sin(angle1Pos);
+
+      const angle2Pos = 20 * Math.PI / 180;
+      const arc2LabelX = vertLineX + (arcRadius + 12) * Math.cos(angle2Pos);
+      const arc2LabelY = arcCenterY - (arcRadius + 12) * Math.sin(angle2Pos);
+
+      return {
+        rect,
+        vertLine,
+        arcPath,
+        arc1LabelPos: { x: arc1LabelX - 10, y: arc1LabelY - 25 },
+        arc2LabelPos: { x: arc2LabelX + 5, y: arc2LabelY + 5 }
+      };
+    },
+
+    get xBlockData() {
+      const angle = this.angleX ?? 45;
+      const baseY = 240;
+      const height = 150;
+      const width = 45;
+      const rect = this.createTiltedRect(140, baseY, width, height, angle);
+
+      const vertLineX = rect.corners.bl.x - 30;
+      const vertLineLen = height + 15;
+      const vertLine = {
+        x1: vertLineX,
+        y1: baseY,
+        x2: vertLineX,
+        y2: baseY - vertLineLen
+      };
+
+      const vertLineMidY = baseY - vertLineLen / 2;
+      const arcRadius = baseY - vertLineMidY;
+      const arcCenterY = baseY;
+      const arcPath = this.createArcPath(vertLineX, arcCenterY, arcRadius, 90, 0, 1);
+
+      const angle1Pos = 79 * Math.PI / 180;
+      const arc1LabelX = vertLineX + (arcRadius + 10) * Math.cos(angle1Pos);
+      const arc1LabelY = arcCenterY - (arcRadius + 10) * Math.sin(angle1Pos);
+
+      const angle2Pos = 20 * Math.PI / 180;
+      const arc2LabelX = vertLineX + (arcRadius + 10) * Math.cos(angle2Pos);
+      const arc2LabelY = arcCenterY - (arcRadius + 10) * Math.sin(angle2Pos);
+
+      return {
+        rect,
+        vertLine,
+        arcPath,
+        arc1LabelPos: { x: arc1LabelX - 7, y: arc1LabelY - 25 },
+        arc2LabelPos: { x: arc2LabelX + 5, y: arc2LabelY + 5 }
+      };
+    },
+
+    get yBlockData() {
+      const angle = this.angleY ?? 45;
+      const baseY = 240;
+      const height = 150;
+      const width = 45;
+      const rect = this.createTiltedRect(420, baseY, width, height, angle);
+
+      const vertLineX = rect.corners.bl.x - 30;
+      const vertLineLen = height + 15;
+      const vertLine = {
+        x1: vertLineX,
+        y1: baseY,
+        x2: vertLineX,
+        y2: baseY - vertLineLen
+      };
+
+      const vertLineMidY = baseY - vertLineLen / 2;
+      const arcRadius = baseY - vertLineMidY;
+      const arcCenterY = baseY;
+      const arcPath = this.createArcPath(vertLineX, arcCenterY, arcRadius, 90, 0, 1);
+
+      const angle1Pos = 79 * Math.PI / 180;
+      const arc1LabelX = vertLineX + (arcRadius + 15) * Math.cos(angle1Pos);
+      const arc1LabelY = arcCenterY - (arcRadius + 15) * Math.sin(angle1Pos);
+
+      const angle2Pos = 20 * Math.PI / 180;
+      const arc2LabelX = vertLineX + (arcRadius + 15) * Math.cos(angle2Pos);
+      const arc2LabelY = arcCenterY - (arcRadius + 15) * Math.sin(angle2Pos);
+
+      return {
+        rect,
+        vertLine,
+        arcPath,
+        arc1LabelPos: { x: arc1LabelX - 7, y: arc1LabelY - 25 },
+        arc2LabelPos: { x: arc2LabelX + 5, y: arc2LabelY + 5 }
+      };
     },
 
     // ============================================================
@@ -324,6 +444,20 @@ document.addEventListener('alpine:init', () => {
         case 'Escape':
           this.closeDropdown();
           event.preventDefault();
+          break;
+        case 'Home':
+          this.highlightedIndex = 0;
+          this.scrollHighlightedIntoView();
+          event.preventDefault();
+          break;
+        case 'End':
+          this.highlightedIndex = items.length - 1;
+          this.scrollHighlightedIntoView();
+          event.preventDefault();
+          break;
+        case 'Tab':
+          this.closeDropdown();
+          // Allow default tab behavior to proceed
           break;
       }
     },

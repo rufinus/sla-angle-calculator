@@ -22,16 +22,16 @@
 
 /* Layout
    ========================================================================== */
-.calculator-container {
-  max-width: 600px;
-  margin: 2rem auto;
+main.container {
+  max-width: 700px !important;
+  margin: 1rem auto;
   padding: 0 1rem;
 }
 
 @media (min-width: 768px) {
-  .calculator-container {
-    margin: 3rem auto;
-    padding: 0 2rem;
+  main.container {
+    margin: 1.5rem auto;
+    padding: 0 1.5rem;
   }
 }
 
@@ -56,6 +56,18 @@
   margin-top: 0.25rem;
   font-size: 0.875rem;
   color: var(--color-error);
+  animation: errorFadeIn 0.2s ease;
+}
+
+@keyframes errorFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* States
@@ -118,6 +130,25 @@ select:focus-visible {
   border-width: 0;
 }
 
+/* Skip link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  z-index: 1000;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid white;
+  outline-offset: -2px;
+}
+
 .text-center {
   text-align: center;
 }
@@ -146,14 +177,14 @@ select:focus-visible {
 /* Responsive Adjustments
    ========================================================================== */
 @media (max-width: 767px) {
-  .calculator-container {
-    margin: 1rem auto;
+  main.container {
+    margin: 0.5rem auto;
   }
 }
 
 @media (min-width: 1024px) {
-  .calculator-container {
-    margin: 4rem auto;
+  main.container {
+    margin: 1.5rem auto;
   }
 }
 
@@ -169,6 +200,49 @@ select:focus-visible {
   .angle-diagram .angle-arc {
     transition: none;
   }
+
+  .error-message {
+    animation: none;
+  }
+}
+
+/* Printer Selector Row (with Layer Height)
+   ========================================================================== */
+.printer-selector-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.printer-selector-row .printer-selector {
+  margin-bottom: 0;
+}
+
+.printer-selector-row .printer-selector > label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.printer-selector-row .layer-height-control {
+  max-width: 160px;
+  margin: 0;
+}
+
+.printer-selector-row .layer-height-control label {
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .printer-selector-row {
+    grid-template-columns: 1fr;
+  }
+
+  .printer-selector-row .layer-height-control {
+    max-width: 100%;
+  }
 }
 
 /* Printer Selector Dropdown
@@ -179,6 +253,25 @@ select:focus-visible {
 
 .dropdown-wrapper {
   position: relative;
+}
+
+/* Dropdown chevron indicator */
+.dropdown-wrapper::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--pico-muted-color, #6b7280);
+  pointer-events: none;
+}
+
+.dropdown-wrapper input {
+  padding-right: 2.5rem;
 }
 
 .dropdown-list {
@@ -242,6 +335,65 @@ select:focus-visible {
   color: var(--color-error);
   cursor: default;
   justify-content: center;
+  gap: 0.75rem;
+}
+
+/* Retry button */
+.retry-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.retry-btn:hover {
+  opacity: 0.9;
+}
+
+.retry-btn:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Loading Skeleton Items */
+.loading-skeleton {
+  padding: 0 !important;
+  cursor: default !important;
+}
+
+.loading-skeleton:hover {
+  background-color: transparent !important;
+}
+
+.skeleton-items {
+  width: 100%;
+}
+
+.skeleton-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--pico-form-element-border-color, #e5e7eb);
+}
+
+.skeleton-item:last-child {
+  border-bottom: none;
+}
+
+.skeleton-name {
+  width: 55%;
+  height: 1rem;
+}
+
+.skeleton-pixel {
+  width: 18%;
+  height: 1rem;
 }
 
 .printer-name {
@@ -323,20 +475,20 @@ select:focus-visible {
 /* Results Section
    ========================================================================== */
 .results {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
   background: var(--pico-card-background-color, #f9fafb);
   border-radius: 8px;
   text-align: center;
 }
 
 .results h2 {
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.125rem;
 }
 
 .angle-display {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .angle-display .angle-value {
@@ -390,7 +542,6 @@ select:focus-visible {
 .angle-label {
   font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--pico-muted-color, #6b7280);
   margin-bottom: 0.25rem;
@@ -420,6 +571,32 @@ select:focus-visible {
   margin-top: 0.25rem;
 }
 
+.complementary-angle {
+  font-size: 0.875rem;
+  color: var(--pico-muted-color, #6b7280);
+  margin-top: 0.5rem;
+}
+
+/* Square pixels single display */
+.angle-display.single {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.angle-display.single .angle-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--pico-muted-color, #6b7280);
+  margin-bottom: 0.25rem;
+}
+
+.angle-display.single .angle-row {
+  display: flex;
+  align-items: baseline;
+}
+
 /* Responsive: stack on mobile */
 @media (max-width: 480px) {
   .angle-display.dual {
@@ -428,69 +605,78 @@ select:focus-visible {
   }
 }
 
-/* SVG Angle Diagram
+/* SVG 2D Tilted Rectangle Angle Diagram (RC87 style)
    ========================================================================== */
 .angle-diagram {
   display: block;
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   height: auto;
   margin: 1.5rem auto 0;
 }
 
+/* Build plate - dark bar at bottom */
 .angle-diagram .build-plate {
-  stroke: var(--pico-muted-color, #6b7280);
-  stroke-width: 3;
-  stroke-linecap: round;
+  fill: #1a1a1a;
 }
 
-.angle-diagram .model-surface {
-  stroke: var(--color-primary);
-  stroke-width: 3;
-  stroke-linecap: round;
-  transition: x2 0.3s ease-out, y2 0.3s ease-out;
-}
-
-.angle-diagram .dimension-line {
-  stroke: var(--pico-color, #374151);
-  stroke-width: 1.5;
-  stroke-dasharray: 6, 4;
-}
-
-.angle-diagram .dimension-cap {
-  stroke: var(--pico-color, #374151);
-  stroke-width: 1.5;
-}
-
-.angle-diagram .angle-arc {
-  stroke: var(--color-success);
-  stroke-width: 2;
-  transition: d 0.3s ease-out;
-}
-
-.angle-diagram .right-angle {
-  stroke: var(--pico-muted-color, #6b7280);
+/* Tilted rectangle block - gray fill */
+.angle-diagram .tilted-block {
+  fill: #6b7280;
+  stroke: #4b5563;
   stroke-width: 1;
 }
 
-.angle-diagram .diagram-label,
-.angle-diagram .dimension-label,
+/* Green left edge highlight */
+.angle-diagram .block-left-edge {
+  stroke: #22c55e;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+/* Angle indicator line (parallel to tilted edge) */
+.angle-diagram .angle-indicator-line {
+  stroke: #9ca3af;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Arc for complementary angle */
+.angle-diagram .angle-arc {
+  fill: none;
+  stroke: #9ca3af;
+  stroke-width: 1.5;
+}
+
+/* Vertical reference line */
+.angle-diagram .vertical-reference-line {
+  stroke: #9ca3af;
+  stroke-width: 1;
+}
+
+/* Angle labels (left side - calculated angle) */
 .angle-diagram .angle-label {
   font-family: inherit;
   font-size: 14px;
-  fill: var(--pico-color, #374151);
-  text-anchor: middle;
-}
-
-.angle-diagram .dimension-label {
-  font-size: 12px;
   font-weight: 600;
+  fill: var(--pico-color, #e5e7eb);
 }
 
-.angle-diagram .angle-label {
+/* Complementary angle labels (right side) */
+.angle-diagram .angle-label-complement {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  fill: var(--pico-color, #e5e7eb);
+}
+
+/* Block axis labels (X/Y) */
+.angle-diagram .block-axis-label {
+  font-family: inherit;
   font-size: 16px;
-  font-weight: 600;
-  fill: var(--color-success);
+  font-weight: 700;
+  fill: var(--pico-muted-color, #9ca3af);
+  text-anchor: middle;
 }
 
 /* Dark Mode Dropdown
@@ -516,24 +702,5 @@ select:focus-visible {
 
   .results {
     background: var(--pico-card-background-color, #1f2937);
-  }
-
-  /* SVG Diagram Dark Mode */
-  .angle-diagram .dimension-line,
-  .angle-diagram .dimension-cap {
-    stroke: var(--pico-color, #e5e7eb);
-  }
-
-  .angle-diagram .diagram-label,
-  .angle-diagram .dimension-label {
-    fill: var(--pico-color, #e5e7eb);
-  }
-
-  .angle-diagram .build-plate {
-    stroke: var(--pico-muted-color, #9ca3af);
-  }
-
-  .angle-diagram .right-angle {
-    stroke: var(--pico-muted-color, #9ca3af);
   }
 }
