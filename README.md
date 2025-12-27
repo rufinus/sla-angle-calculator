@@ -2,6 +2,8 @@
 
 Calculate optimal support angles for SLA/resin 3D printers based on pixel size and layer height.
 
+**[Live Demo](https://angle-calc.3dprint.at)**
+
 Based on the [original calculator by RC87](https://www.rc87.blog/angle-calculator/).
 
 ## Features
@@ -53,6 +55,8 @@ angle = atan(pixelSize / layerHeight)
 This gives the angle from vertical at which layer stepping becomes visible. The complementary angle (90° - angle) is also shown.
 
 ## Adding Printers
+
+Merge requests for new printer definitions are welcome!
 
 Edit `data/printers.json` to add new printer definitions:
 
