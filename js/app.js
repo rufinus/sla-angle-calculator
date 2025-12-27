@@ -199,6 +199,72 @@ document.addEventListener('alpine:init', () => {
     },
 
     // ============================================================
+    // SVG DIAGRAM CALCULATIONS
+    // ============================================================
+
+    // Diagram coordinate system constants
+    DIAGRAM_START_X: 100,
+    DIAGRAM_START_Y: 220,
+    DIAGRAM_LINE_LENGTH: 180,
+    DIAGRAM_ARC_RADIUS: 40,
+
+    get diagramAngle() {
+      // Use angleX for diagram, default to 45° when no valid angle
+      return this.angleX ?? 45;
+    },
+
+    get diagramEndpoint() {
+      const angle = this.diagramAngle;
+      const radians = angle * (Math.PI / 180);
+
+      const endX = this.DIAGRAM_START_X + this.DIAGRAM_LINE_LENGTH * Math.cos(radians);
+      const endY = this.DIAGRAM_START_Y - this.DIAGRAM_LINE_LENGTH * Math.sin(radians);
+
+      return { x: Math.round(endX), y: Math.round(endY) };
+    },
+
+    get diagramLayerHeight() {
+      // Calculate the visual layer height endpoint based on angle
+      const angle = this.diagramAngle;
+      const radians = angle * (Math.PI / 180);
+
+      // Use a fixed visual ratio for the layer height indicator
+      const visualHeight = 80;
+      const endY = this.DIAGRAM_START_Y - visualHeight;
+
+      return { x: this.DIAGRAM_START_X, y: endY };
+    },
+
+    get angleArcPath() {
+      const angle = this.diagramAngle;
+      const radians = angle * (Math.PI / 180);
+      const radius = this.DIAGRAM_ARC_RADIUS;
+
+      const startX = this.DIAGRAM_START_X + radius;
+      const startY = this.DIAGRAM_START_Y;
+
+      const endX = this.DIAGRAM_START_X + radius * Math.cos(radians);
+      const endY = this.DIAGRAM_START_Y - radius * Math.sin(radians);
+
+      // Large arc flag: 0 for angles < 180°
+      const largeArc = angle > 180 ? 1 : 0;
+
+      return `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArc} 0 ${Math.round(endX)} ${Math.round(endY)}`;
+    },
+
+    get angleLabelPosition() {
+      // Position the angle label just outside the arc
+      const angle = this.diagramAngle;
+      const radians = (angle / 2) * (Math.PI / 180); // Middle of the arc
+      const labelRadius = this.DIAGRAM_ARC_RADIUS + 20;
+
+      const x = this.DIAGRAM_START_X + labelRadius * Math.cos(radians);
+      const y = this.DIAGRAM_START_Y - labelRadius * Math.sin(radians);
+
+      return { x: Math.round(x), y: Math.round(y) };
+    },
+
+    // ============================================================
     // ACTIONS
     // ============================================================
 

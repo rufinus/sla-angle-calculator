@@ -164,6 +164,11 @@ select:focus-visible {
     animation: none;
     background: var(--skeleton-base);
   }
+
+  .angle-diagram .model-surface,
+  .angle-diagram .angle-arc {
+    transition: none;
+  }
 }
 
 /* Printer Selector Dropdown
@@ -443,6 +448,7 @@ select:focus-visible {
   stroke: var(--color-primary);
   stroke-width: 3;
   stroke-linecap: round;
+  transition: x2 0.3s ease-out, y2 0.3s ease-out;
 }
 
 .angle-diagram .dimension-line {
@@ -459,6 +465,7 @@ select:focus-visible {
 .angle-diagram .angle-arc {
   stroke: var(--color-success);
   stroke-width: 2;
+  transition: d 0.3s ease-out;
 }
 
 .angle-diagram .right-angle {
