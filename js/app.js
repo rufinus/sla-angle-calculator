@@ -37,8 +37,22 @@ document.addEventListener('alpine:init', () => {
       // TODO: Load favorites from localStorage
     },
 
-    loadPrinters() {
-      // TODO: Fetch printers.json and populate printers array
+    async loadPrinters() {
+      this.loading = true;
+      this.jsonError = null;
+
+      try {
+        const response = await fetch('data/printers.json');
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        this.printers = await response.json();
+      } catch (error) {
+        this.jsonError = 'Failed to load printer database';
+        console.error('Printer load error:', error);
+      } finally {
+        this.loading = false;
+      }
     },
 
     // ============================================================
