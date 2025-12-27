@@ -96,6 +96,35 @@
             </div>
         </section>
 
+        <section class="results" x-show="canShowResults">
+            <h2>Calculated Angle</h2>
+
+            <div class="angle-display">
+                <span class="angle-value" x-text="angleX?.toFixed(2) ?? '--'"></span>
+                <span class="angle-unit">°</span>
+            </div>
+
+            <div class="layer-height-control">
+                <label for="layer-height">Layer Height (μm)</label>
+                <input
+                    id="layer-height"
+                    type="number"
+                    x-model.number="layerHeight"
+                    min="10"
+                    max="200"
+                    step="1"
+                    :aria-invalid="validationErrors.layerHeight ? 'true' : 'false'"
+                    :class="{ 'error': validationErrors.layerHeight }"
+                />
+                <span class="error-message" x-show="validationErrors.layerHeight" x-text="validationErrors.layerHeight"></span>
+            </div>
+
+            <div class="pixel-info-display">
+                <span class="badge" x-show="hasSquarePixels">Square Pixels</span>
+                <span x-text="currentPixelX + 'μm'"></span>
+            </div>
+        </section>
+
         <footer>
             <a href="impressum.html">Impressum</a>
         </footer>

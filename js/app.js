@@ -87,6 +87,24 @@ document.addEventListener('alpine:init', () => {
       return !Object.values(this.validationErrors).some(error => error !== null);
     },
 
+    get canShowResults() {
+      return this.angleX !== null && this.isValid;
+    },
+
+    get hasSquarePixels() {
+      const pixelX = this.selectedPrinter?.pixelX ?? this.manualPixelX;
+      const pixelY = this.selectedPrinter?.pixelY ?? this.manualPixelY;
+      return pixelX === pixelY;
+    },
+
+    get currentPixelX() {
+      return this.selectedPrinter?.pixelX ?? this.manualPixelX ?? null;
+    },
+
+    get currentPixelY() {
+      return this.selectedPrinter?.pixelY ?? this.manualPixelY ?? null;
+    },
+
     get filteredPrinters() {
       if (!this.searchQuery.trim()) {
         return this.sortWithFavorites(this.printers);

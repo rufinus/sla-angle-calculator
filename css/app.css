@@ -276,6 +276,59 @@ select:focus-visible {
   margin-bottom: 0.25rem;
 }
 
+/* Results Section
+   ========================================================================== */
+.results {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--pico-card-background-color, #f9fafb);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.results h2 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.angle-display {
+  margin-bottom: 1.5rem;
+}
+
+.angle-display .angle-value {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.angle-display .angle-unit {
+  font-size: 2rem;
+  color: var(--pico-muted-color, #6b7280);
+  vertical-align: super;
+}
+
+.layer-height-control {
+  max-width: 200px;
+  margin: 0 auto 1rem;
+  text-align: left;
+}
+
+.layer-height-control label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.pixel-info-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--pico-muted-color, #6b7280);
+}
+
 /* Dark Mode Dropdown
    ========================================================================== */
 @media (prefers-color-scheme: dark) {
@@ -286,5 +339,9 @@ select:focus-visible {
 
   .dropdown-item {
     border-color: var(--pico-form-element-border-color, #374151);
+  }
+
+  .results {
+    background: var(--pico-card-background-color, #1f2937);
   }
 }
