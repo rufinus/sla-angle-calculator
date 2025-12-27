@@ -296,8 +296,9 @@ select:focus-visible {
   padding: 0.75rem 1rem;
   cursor: pointer;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 0.5rem;
   border-bottom: 1px solid var(--pico-form-element-border-color, #e5e7eb);
 }
 
@@ -403,6 +404,7 @@ select:focus-visible {
 .pixel-info {
   font-size: 0.875rem;
   color: var(--pico-muted-color, #6b7280);
+  margin-left: auto;
 }
 
 /* Favorites Section */
