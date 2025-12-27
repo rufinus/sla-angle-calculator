@@ -6,6 +6,13 @@
 document.addEventListener('alpine:init', () => {
   Alpine.data('calculator', () => ({
     // ============================================================
+    // CONSTANTS
+    // ============================================================
+
+    STORAGE_KEY: 'sla-calculator-favorites',
+    MAX_FAVORITES: 20,
+
+    // ============================================================
     // STATE
     // ============================================================
 
@@ -35,7 +42,45 @@ document.addEventListener('alpine:init', () => {
     // ============================================================
 
     loadFavorites() {
-      // TODO: Load favorites from localStorage
+      try {
+        const stored = localStorage.getItem(this.STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            // Limit to max favorites
+            this.favorites = parsed.slice(0, this.MAX_FAVORITES);
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to load favorites:', error);
+        this.favorites = [];
+      }
+    },
+
+    saveFavorites() {
+      try {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.favorites));
+      } catch (error) {
+        console.warn('Failed to save favorites:', error);
+      }
+    },
+
+    toggleFavorite(printerId) {
+      const index = this.favorites.indexOf(printerId);
+      if (index === -1) {
+        // Add to favorites (respect max limit)
+        if (this.favorites.length < this.MAX_FAVORITES) {
+          this.favorites.push(printerId);
+        }
+      } else {
+        // Remove from favorites
+        this.favorites.splice(index, 1);
+      }
+      this.saveFavorites();
+    },
+
+    isFavorite(printerId) {
+      return this.favorites.includes(printerId);
     },
 
     async loadPrinters() {
