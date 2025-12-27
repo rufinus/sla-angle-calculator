@@ -28,6 +28,7 @@ document.addEventListener('alpine:init', () => {
     highlightedIndex: 0,
     loading: false,
     jsonError: null,
+    showPrinterModal: false,
 
     // ============================================================
     // LIFECYCLE

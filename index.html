@@ -20,6 +20,7 @@
         <section class="printer-selector-row">
             <div class="printer-selector">
                 <label for="printer-search">Select Printer</label>
+                <div class="printer-input-row">
                 <div class="dropdown-wrapper">
                 <input
                     id="printer-search"
@@ -121,6 +122,15 @@
                         </li>
                     </template>
                 </ul>
+                </div>
+                <button
+                    x-show="selectedPrinter"
+                    @click="showPrinterModal = true"
+                    class="info-btn"
+                    type="button"
+                    aria-label="Show printer details"
+                    title="Printer details"
+                >ℹ</button>
                 </div>
             </div>
             <div class="layer-height-control">
@@ -364,6 +374,49 @@
                 </g>
             </svg>
         </section>
+
+        <!-- Printer Info Modal -->
+        <div
+            x-show="showPrinterModal && selectedPrinter"
+            x-cloak
+            class="modal-backdrop"
+            @click.self="showPrinterModal = false"
+            @keydown.escape.window="showPrinterModal = false"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+        >
+            <div class="modal">
+                <header class="modal-header">
+                    <h3 id="modal-title" x-text="selectedPrinter?.manufacturer + ' ' + selectedPrinter?.model"></h3>
+                    <button @click="showPrinterModal = false" class="modal-close" aria-label="Close">&times;</button>
+                </header>
+                <div class="modal-body">
+                    <dl class="printer-specs">
+                        <div class="spec-row">
+                            <dt>Screen Resolution</dt>
+                            <dd x-text="selectedPrinter?.resolutionX + ' × ' + selectedPrinter?.resolutionY + ' px'"></dd>
+                        </div>
+                        <div class="spec-row">
+                            <dt>Build Volume</dt>
+                            <dd x-text="selectedPrinter?.sizeX + ' × ' + selectedPrinter?.sizeY + ' × ' + selectedPrinter?.sizeZ + ' mm'"></dd>
+                        </div>
+                        <div class="spec-row">
+                            <dt>Pixel Size (XY)</dt>
+                            <dd x-text="selectedPrinter?.pixelX === selectedPrinter?.pixelY ? selectedPrinter?.pixelX + ' μm' : selectedPrinter?.pixelX + ' × ' + selectedPrinter?.pixelY + ' μm'"></dd>
+                        </div>
+                        <div class="spec-row">
+                            <dt>Z Resolution</dt>
+                            <dd x-text="selectedPrinter?.zRes + ' μm'"></dd>
+                        </div>
+                        <div class="spec-row" x-show="selectedPrinter?.year">
+                            <dt>Release Year</dt>
+                            <dd x-text="selectedPrinter?.year"></dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
 
     </main>
 </body>

@@ -704,3 +704,166 @@ select:focus-visible {
     background: var(--pico-card-background-color, #1f2937);
   }
 }
+
+/* Info Button
+   ========================================================================== */
+.printer-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.printer-input-row .dropdown-wrapper {
+  flex: 1;
+}
+
+.info-btn {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  background: transparent;
+  color: var(--pico-muted-color, #6b7280);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+  position: relative;
+  top: -5px;
+}
+
+.info-btn:hover {
+  color: var(--pico-color, #e5e7eb);
+}
+
+/* Modal
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--pico-background-color, #fff);
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--pico-form-element-border-color, #e5e7eb);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.modal-close {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  background: transparent;
+  border: none;
+  color: var(--pico-muted-color, #6b7280);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.modal-close:hover {
+  background: var(--pico-form-element-border-color, #e5e7eb);
+}
+
+.modal-body {
+  padding: 1.25rem;
+}
+
+/* Printer Specs in Modal */
+.printer-specs {
+  margin: 0;
+}
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--pico-form-element-border-color, #e5e7eb);
+}
+
+.spec-row:last-child {
+  border-bottom: none;
+}
+
+.spec-row dt {
+  font-weight: 500;
+  color: var(--pico-muted-color, #6b7280);
+}
+
+.spec-row dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Dark Mode Modal */
+@media (prefers-color-scheme: dark) {
+  .modal {
+    background: var(--pico-background-color, #1f2937);
+  }
+
+  .modal-header {
+    border-color: var(--pico-form-element-border-color, #374151);
+  }
+
+  .modal-close:hover {
+    background: var(--pico-form-element-border-color, #374151);
+  }
+
+  .spec-row {
+    border-color: var(--pico-form-element-border-color, #374151);
+  }
+}

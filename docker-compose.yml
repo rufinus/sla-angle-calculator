@@ -1,0 +1,8 @@
+services:
+  sla-calc:
+    build: .
+    image: angle-calculator
+    container_name: angle-calc
+    ports:
+      - "8080:80"
+    restart: unless-stopped
